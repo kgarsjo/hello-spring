@@ -1,7 +1,6 @@
 package hellospring.todo.controllers;
 
 import java.util.List;
-import java.util.Map;
 import java.util.UUID;
 
 import org.springframework.http.HttpStatus;
@@ -18,13 +17,12 @@ import org.springframework.web.bind.annotation.RestController;
 
 import hellospring.todo.models.TodoList;
 import hellospring.todo.params.TodoListParams;
-import hellospring.todo.services.ITodoListService;
 import hellospring.todo.services.TodoListService;
 
 @RestController
 @RequestMapping("/todos")
 public class TodoListController {
-	private ITodoListService todoListService;
+	private TodoListService todoListService;
 
     public TodoListController(TodoListService todoListService) {
         this.todoListService = todoListService;
@@ -35,7 +33,7 @@ public class TodoListController {
     public TodoList createTodoList(
         @RequestBody() TodoListParams params
     ) {
-        return todoListService.createTodoList(params.getName());
+        return todoListService.create(params.name);
     }
 
     @DeleteMapping("/{id}")
@@ -43,7 +41,7 @@ public class TodoListController {
     public void deleteTodoList(
         @PathVariable("id") UUID id
     ) {
-        todoListService.deleteTodoList(id);
+        todoListService.delete(id);
     }
 
     @GetMapping("")
@@ -51,14 +49,14 @@ public class TodoListController {
         @RequestParam(name = "pageNumber", defaultValue = "0", required = false) int pageNumber,
         @RequestParam(name = "pageSize", defaultValue = "25", required = false) int pageSize
     ) {
-        return todoListService.getTodoListsPage(pageNumber, pageSize).getContent();
+        return todoListService.getPage(pageNumber, pageSize).getContent();
     }
 
     @GetMapping("/{id}")
     public TodoList getTodoList(
         @PathVariable("id") UUID id
     ) {
-        return todoListService.getTodoList(id);
+        return todoListService.get(id);
     }
 
     @PutMapping("/{id}")
@@ -66,6 +64,6 @@ public class TodoListController {
         @PathVariable("id") UUID id,
         @RequestBody() TodoListParams params
     ) {
-        return todoListService.updateTodoList(id, params.getName());
+        return todoListService.update(id, params.name);
     }
 }

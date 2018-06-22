@@ -11,38 +11,42 @@ import hellospring.todo.models.TodoList;
 import hellospring.todo.repositories.ITodoListRepository;
 
 @Service
-public class TodoListService implements ITodoListService {
+public class TodoListService {
     private ITodoListRepository todoListRepository;
 
     public TodoListService(ITodoListRepository todoListRepository) {
         this.todoListRepository = todoListRepository;
     }
 
-    public TodoList createTodoList(String name) {
+    public TodoList create(String name) {
         TodoList todoList = new TodoList();
         todoList.setName(name);
         return this.todoListRepository.save(todoList);
     }
 
-    public void deleteTodoList(UUID id) {
+    public void delete(UUID id) {
         this.todoListRepository.deleteById(id);
     }
 
-    public TodoList getTodoList(UUID id) {
+    public TodoList get(UUID id) {
         return this.todoListRepository.findById(id)
-            .orElseThrow(ResourceNotFoundException::new);
+        .orElseThrow(() -> (
+            new ResourceNotFoundException(String.format("No TodoList with id '%s'", id))
+        ));
     }
 
-    public Page<TodoList> getTodoListsPage(int pageNumber, int pageSize) {
+    public Page<TodoList> getPage(int pageNumber, int pageSize) {
         return this.todoListRepository.findAll(PageRequest.of(pageNumber, pageSize));
     }
 
-    public TodoList updateTodoList(UUID id, String name) {
+    public TodoList update(UUID id, String name) {
         return this.todoListRepository.findById(id)
             .map(todoList -> {
                 todoList.setName(name);
                 return this.todoListRepository.save(todoList);
             })
-            .orElseThrow(ResourceNotFoundException::new);
+            .orElseThrow(() -> (
+                new ResourceNotFoundException(String.format("No TodoList with id '%s'", id))
+            ));
     }
 }
